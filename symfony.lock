@@ -1,4 +1,19 @@
 {
+    "lcobucci/jwt": {
+        "version": "3.2.5"
+    },
+    "overblog/graphiql-bundle": {
+        "version": "0.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "0.1",
+            "ref": "fe8d172f2480efc598f5a8be0e732656d3594cec"
+        },
+        "files": [
+            "config/routes/dev/graphiql.yaml"
+        ]
+    },
     "overblog/graphql-bundle": {
         "version": "0.12",
         "recipe": {
@@ -138,6 +153,23 @@
             "config/routes.yaml"
         ]
     },
+    "symfony/twig-bridge": {
+        "version": "v4.2.4"
+    },
+    "symfony/twig-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "369b5b29dc52b2c190002825ae7ec24ab6f962dd"
+        },
+        "files": [
+            "config/packages/twig.yaml",
+            "config/routes/dev/twig.yaml",
+            "templates/base.html.twig"
+        ]
+    },
     "symfony/var-exporter": {
         "version": "v4.2.4"
     },
@@ -152,6 +184,9 @@
     },
     "symfony/yaml": {
         "version": "v4.2.4"
+    },
+    "twig/twig": {
+        "version": "v2.7.4"
     },
     "webonyx/graphql-php": {
         "version": "v0.13.1"
