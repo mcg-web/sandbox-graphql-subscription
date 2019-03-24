@@ -1,0 +1,22 @@
+overblog_graphql:
+    definitions:
+        schema:
+            query: Query
+            mutation: Mutation
+            subscription: Subscription
+            resolver_maps: [App\Resolver\SubscriptionResolverMap]
+        mappings:
+            types:
+                -
+                    type: yaml
+                    dir: "%kernel.project_dir%/config/graphql/types"
+                    suffix: ~
+    subscriptions:
+        topic_url_pattern: "http://localhost:8080/subscriptions/{id}"
+        mercure:
+            url: "http://localhost:5000/hub"
+            jwt:
+                publish_secret_key: "!mySuperPublisherSecretKey!"
+                subscribe_secret_key: "!mySuperSubscriberSecretKey!"
+    security:
+        handle_cors: true
