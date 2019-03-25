@@ -1,5 +1,11 @@
 # GraphQL Subscription poc
 
+## Install
+
+```bash
+composer i
+```
+
 ## Run
 
 ### Symfony
