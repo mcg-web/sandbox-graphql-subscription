@@ -1,0 +1,23 @@
+version: "3.4"
+
+services:
+    service_mercure:
+        image: dunglas/mercure
+        environment:
+            CORS_ALLOWED_ORIGINS: "http://localhost:8000"
+            PUBLISHER_JWT_KEY: "!mySuperPublisherSecretKey!"
+            SUBSCRIBER_JWT_KEY: "!mySuperSubscriberSecretKey!"
+        expose:
+            - "80"
+        ports:
+            - "5000:80"
+    app_demo:
+        build: .
+        working_dir: /var/www
+        environment:
+            APP_ENV: "dev"
+            APP_DEBUG: 1
+        volumes:
+            - "./:/var/www"
+        ports:
+          - "8000:80"

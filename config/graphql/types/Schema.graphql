@@ -1,7 +1,7 @@
 type Message {
   roomId: Int!
   body: String!
-  timestamp: String!
+  createdAt: String!
 }
 
 type Room {
@@ -17,8 +17,9 @@ type Query {
 
 type Mutation {
   chat(roomName: String!, body: String!): Message!
+  createRoom(name: String!): Room
 }
 
 type Subscription {
-  inbox(roomName: String): Message
+  inbox(roomName: String!): Message
 }

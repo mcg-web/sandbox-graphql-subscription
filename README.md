@@ -1,28 +1,16 @@
-# GraphQL Subscription poc
+# GraphQL Subscription POC
+
+## Start docker
+
+```bash
+docker-compose up -d
+```
 
 ## Install
 
 ```bash
-composer i
-```
-
-## Run
-
-### Symfony
-
-```bash
-bin/console server:run localhost:8000
-```
-
-### Mercure
-
-```bash
-docker run  \
-    -e CORS_ALLOWED_ORIGINS='http://localhost:8000' \
-    -e PUBLISHER_JWT_KEY='!mySuperPublisherSecretKey!' \
-    -e SUBSCRIBER_JWT_KEY='!mySuperSubscriberSecretKey!' \
-    -p 5000:80 \
-    dunglas/mercure
+docker-compose exec app_demo bash -c "composer i"
+docker-compose exec -u www-data app_demo bash -c "php bin/console doctrine:migrations:migrate"
 ```
 
 ## GraphQL test query and mutation
@@ -34,7 +22,7 @@ query getRooms {
     name
     messages {
       roomId
-      timestamp
+      createdAt
       body
     }
   }
@@ -43,13 +31,13 @@ query getRooms {
 mutation sendMessageToFoo {
 	chat(roomName: "foo", body: "my message") {
     roomId
-    timestamp
+    createdAt
     body
   }
 }
 ```
 
-## start a subscription
+## Start a subscription
 
 ### using curl
 
@@ -57,7 +45,7 @@ mutation sendMessageToFoo {
 curl --request POST \
   --url http://localhost:8000/subscription/ \
   --header 'content-type: application/graphql' \
-  --data 'subscription {  inbox(roomName: "foo") { roomId, timestamp, body} }'
+  --data 'subscription {  inbox(roomName: "foo") { roomId, createdAt, body} }'
 ```
 
 ### full example with javascript
@@ -71,7 +59,7 @@ curl --request POST \
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({query: 'subscription {  inbox(roomName: "foo") { roomId, timestamp, body} }'})
+    body: JSON.stringify({query: 'subscription {  inbox(roomName: "foo") { roomId, createdAt, body} }'})
   });
   const payload = await rawResponse.json();
   console.log(payload);
