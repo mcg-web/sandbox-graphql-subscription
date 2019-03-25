@@ -1,14 +1,25 @@
 # GraphQL Subscription poc
 
+## Run
+
+### Symfony
+
+```bash
+bin/console server:run localhost:8000
+```
+
+### Mercure
+
 ```bash
 docker run  \
     -e CORS_ALLOWED_ORIGINS='http://localhost:8000' \
     -e PUBLISHER_JWT_KEY='!mySuperPublisherSecretKey!' \
     -e SUBSCRIBER_JWT_KEY='!mySuperSubscriberSecretKey!' \
-    -e PUBLISH_ALLOWED_ORIGINS='http://localhost:8080' \
     -p 5000:80 \
     dunglas/mercure
 ```
+
+## GraphQL test query and mutation
 
 ```graphql
 query getRooms {
@@ -34,6 +45,8 @@ mutation sendMessageToFoo {
 
 ## start a subscription
 
+### using curl
+
 ```bash
 curl --request POST \
   --url http://localhost:8000/subscription/ \
@@ -41,15 +54,33 @@ curl --request POST \
   --data 'subscription {  inbox(roomName: "foo") { roomId, timestamp, body} }'
 ```
 
-
-create a cookie with `mercureAuthorization={token}`
-
+### full example with javascript
 
 ```javascript
-var url = new URL('http://localhost:5000/hub')
-url.searchParams.append('topic', 'http://localhost:8000/subscriptions/b02bfaa2bb46');
-var eventSource = new EventSource(url, {withCredentials: true});
-eventSource.onmessage = e => console.log(JSON.parse(e.data));
+(async () => {
+  // start a subscription
+  const rawResponse = await fetch("http://localhost:8000/subscription/", {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({query: 'subscription {  inbox(roomName: "foo") { roomId, timestamp, body} }'})
+  });
+  const payload = await rawResponse.json();
+  console.log(payload);
+
+  if (payload.type === 'start') {
+    var url = new URL('http://localhost:5000/hub');
+    url.searchParams.append('topic', payload.topic);
+    // create the new mercureAuthorization cookie, this can be done by Authorization header 
+    // but EventSource does not support header.
+    // can't use CORS wildcard with credentials.
+    document.cookie = "mercureAuthorization="+payload.token;
+    var eventSource = new EventSource(url, {withCredentials: true});
+    eventSource.onmessage = e => console.log(JSON.parse(e.data));
+  }
+})();
 ```
 
 
