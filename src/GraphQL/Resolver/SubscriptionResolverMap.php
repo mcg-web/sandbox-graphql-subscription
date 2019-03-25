@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\GraphQL\Resolver;
 
 use Overblog\GraphQLBundle\Resolver\ResolverMap;
+use Overblog\GraphQLBundle\Subscription\Event\PayloadEvent;
 use Overblog\GraphQLBundle\Subscription\RealtimeNotifier;
 
 class SubscriptionResolverMap extends ResolverMap
@@ -70,7 +71,24 @@ class SubscriptionResolverMap extends ResolverMap
         ];
 
         $subscriptionType = [
-            'inbox' => function ($message) {
+            'inbox' => function (?PayloadEvent $payloadEvent, $args) use ($roomByName) {
+                if (null === $payloadEvent) {
+                    // here send data on subscription start
+
+                    return;
+                }
+                $message = $payloadEvent->getPayload();
+
+                // filter on roomName
+                if (isset($args['roomName'])) {
+                    $room = $roomByName($args['roomName']);
+                    if ($room['id'] !== $message['roomId']) {
+                        $payloadEvent->stopPropagation();
+
+                        return;
+                    }
+                }
+
                 return $message;
             },
         ];
@@ -79,7 +97,7 @@ class SubscriptionResolverMap extends ResolverMap
             'Room' => $roomType,
             'Query' => $queryType,
             'Mutation' => $mutationType,
-            'Subscriber' => $subscriptionType,
+            'Subscription' => $subscriptionType,
         ];
     }
 }
