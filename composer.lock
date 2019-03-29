@@ -1548,12 +1548,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mcg-web/GraphQLBundle.git",
-                "reference": "de64e0f5e8bd087618f5406b7a23ea4c8796fd16"
+                "reference": "cd39143f15447c12b5b9b208e0a6087248bcda06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mcg-web/GraphQLBundle/zipball/de64e0f5e8bd087618f5406b7a23ea4c8796fd16",
-                "reference": "de64e0f5e8bd087618f5406b7a23ea4c8796fd16",
+                "url": "https://api.github.com/repos/mcg-web/GraphQLBundle/zipball/cd39143f15447c12b5b9b208e0a6087248bcda06",
+                "reference": "cd39143f15447c12b5b9b208e0a6087248bcda06",
                 "shasum": ""
             },
             "require": {
@@ -1569,7 +1569,8 @@
                 "webonyx/graphql-php": "^0.13.0"
             },
             "replace": {
-                "overblog/graphql-php-generator": "self.version"
+                "overblog/graphql-php-generator": "self.version",
+                "overblog/graphql-subscription": "self.version"
             },
             "require-dev": {
                 "lcobucci/jwt": "^3.2",
@@ -1603,14 +1604,16 @@
             "autoload": {
                 "psr-4": {
                     "Overblog\\GraphQLBundle\\": "src/",
-                    "Overblog\\GraphQLGenerator\\": "lib/generator/src/"
+                    "Overblog\\GraphQLGenerator\\": "lib/generator/src/",
+                    "Overblog\\GraphQLSubscription\\": "lib/subscription/src/"
                 }
             },
             "autoload-dev": {
                 "psr-4": {
                     "Overblog\\GraphQLBundle\\Benchmarks\\": "benchmarks/",
                     "Overblog\\GraphQLBundle\\Tests\\": "tests/",
-                    "Overblog\\GraphQLGenerator\\Tests\\": "lib/generator/tests/"
+                    "Overblog\\GraphQLGenerator\\Tests\\": "lib/generator/tests/",
+                    "Overblog\\GraphQLSubscription\\Tests\\": "lib/subscription/tests/"
                 }
             },
             "scripts": {
@@ -1663,7 +1666,7 @@
             "support": {
                 "source": "https://github.com/mcg-web/GraphQLBundle/tree/subscriptions"
             },
-            "time": "2019-03-25T14:28:14+00:00"
+            "time": "2019-03-29T15:37:10+00:00"
         },
         {
             "name": "psr/cache",

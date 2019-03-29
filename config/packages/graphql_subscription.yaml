@@ -1,0 +1,10 @@
+overblog_graphql_subscription:
+    topic_url_pattern: "http://localhost:8000/subscriptions/{channel}/{id}.json"
+    mercure_hub:
+        url: "http://service_mercure/hub"
+        publish:
+            secret_key: "!mySuperPublisherSecretKey!"
+        subscribe:
+            secret_key: "!mySuperSubscriberSecretKey!"
+#    storage:
+#        path: "%kernel.project_dir%/var/graphql-subscriber"

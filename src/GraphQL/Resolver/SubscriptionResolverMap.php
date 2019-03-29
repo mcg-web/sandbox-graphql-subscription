@@ -6,13 +6,12 @@ namespace App\GraphQL\Resolver;
 
 use App\Entity\Message;
 use App\Entity\Room;
-use App\Repository\MessageRepository;
 use App\Repository\RoomRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Overblog\GraphQLBundle\Error\UserError;
 use Overblog\GraphQLBundle\Resolver\ResolverMap;
-use Overblog\GraphQLBundle\Subscription\Event\PayloadEvent;
-use Overblog\GraphQLBundle\Subscription\RealtimeNotifier;
+use Overblog\GraphQLSubscription\RealtimeNotifier;
+use Overblog\GraphQLSubscription\RootValue;
 
 class SubscriptionResolverMap extends ResolverMap
 {
@@ -30,8 +29,6 @@ class SubscriptionResolverMap extends ResolverMap
     {
         /** @var RoomRepository $roomRepository */
         $roomRepository = $this->manager->getRepository(Room::class);
-        /** @var MessageRepository $messageRepository */
-        $messageRepository = $this->manager->getRepository(Message::class);
 
         $roomByName = function (string $name) use ($roomRepository): ?Room {
             return $roomRepository->findOneBy(['name' => $name]);
@@ -81,7 +78,7 @@ class SubscriptionResolverMap extends ResolverMap
                 },
             ],
             'Subscription' => [
-                'inbox' => function (?PayloadEvent $payloadEvent, $args) use ($roomByName) {
+                'inbox' => function (?RootValue $payloadEvent, $args) use ($roomByName) {
                     if (null === $payloadEvent) {
                         // here send data on subscription start
 

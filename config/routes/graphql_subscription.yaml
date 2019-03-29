@@ -1,0 +1,7 @@
+overblog_graphql_subscription_endpoint:
+  resource: "@OverblogGraphQLSubscriptionBundle/Resources/config/routing/single.yaml"
+  prefix: /subscription
+
+overblog_graphql_subscription_multiple_endpoint:
+  resource: "@OverblogGraphQLSubscriptionBundle/Resources/config/routing/multiple.yaml"
+  prefix: /subscription

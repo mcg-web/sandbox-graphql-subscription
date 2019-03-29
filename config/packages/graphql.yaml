@@ -11,15 +11,5 @@ overblog_graphql:
                     type: graphql
                     dir: "%kernel.project_dir%/config/graphql/types"
                     suffix: ~
-    subscriptions:
-        topic_url_pattern: "http://localhost:8000/subscriptions/{id}"
-        mercure:
-            url: "http://service_mercure/hub"
-            jwt:
-                publish_secret_key: "!mySuperPublisherSecretKey!"
-                subscribe_secret_key: "!mySuperSubscriberSecretKey!"
-        storage:
-            path: "%kernel.project_dir%/var/graphql-subscriber"
-
     security:
         handle_cors: true
