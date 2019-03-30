@@ -6,6 +6,7 @@ namespace App\GraphQL\Resolver;
 
 use App\Entity\Message;
 use App\Entity\Room;
+use App\Repository\MessageRepository;
 use App\Repository\RoomRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Overblog\GraphQLBundle\Error\UserError;
@@ -29,33 +30,40 @@ class SubscriptionResolverMap extends ResolverMap
     {
         /** @var RoomRepository $roomRepository */
         $roomRepository = $this->manager->getRepository(Room::class);
+        /** @var MessageRepository $roomRepository */
+        $messageRepository = $this->manager->getRepository(Message::class);
 
-        $roomByName = function (string $name) use ($roomRepository): ?Room {
-            return $roomRepository->findOneBy(['name' => $name]);
+        $roomById = function (int $id) use ($roomRepository): ?Room {
+            return $roomRepository->findOneBy(['id' => $id], ['createdAt' => 'DESC']);
         };
-        $findMessagesForRoom = function (string $roomName) use ($roomByName): iterable {
-            $room = $roomByName($roomName);
-            return $room ? $room->getMessages() : [];
+
+        $formatCreatedAt = function($value): string {
+            return $value->getCreatedAt()->format(\DATE_ATOM);
+        };
+
+        $findMessagesForRoom = function (int $roomId) use ($messageRepository): iterable {
+            return $messageRepository->findBy(['room' => $roomId], ['createdAt' => 'DESC']);
         };
 
         return [
             'Query' => [
                 'rooms' => function () use ($roomRepository) {
-                    return $roomRepository->findAll();
+                    return $roomRepository->findBy([], ['createdAt' => 'DESC']);
                 },
-                'messages' => function ($value, $args) use ($roomByName, $findMessagesForRoom) {
-                    return  $findMessagesForRoom($args['roomName']);
+                'messages' => function ($value, $args) use ($roomById, $findMessagesForRoom) {
+                    return  $findMessagesForRoom($args['roomId']);
                 },
             ],
             'Mutation' => [
-                'chat' => function ($value, $args) use ($roomByName) {
-                    $room = $roomByName($args['roomName']);
+                'chat' => function ($value, $args) use ($roomById) {
+                    $room = $roomById($args['roomId']);
                     if (null === $room) {
                         throw new UserError('Unknown room.');
                     }
 
                     $message = new Message();
                     $message->setRoom($room)
+                        ->setNickname($args['nickname'])
                         ->setCreatedAt(new \DateTime())
                         ->setBody($args['body']);
 
@@ -69,7 +77,8 @@ class SubscriptionResolverMap extends ResolverMap
                 },
                 'createRoom' => function ($value, $args): Room {
                     $room = new Room();
-                    $room->setName($args['name']);
+                    $room->setName($args['name'])
+                        ->setCreatedAt(new \DateTime());
 
                     $this->manager->persist($room);
                     $this->manager->flush();
@@ -78,7 +87,7 @@ class SubscriptionResolverMap extends ResolverMap
                 },
             ],
             'Subscription' => [
-                'inbox' => function (?RootValue $payloadEvent, $args) use ($roomByName) {
+                'inbox' => function (?RootValue $payloadEvent, $args) use ($roomById) {
                     if (null === $payloadEvent) {
                         // here send data on subscription start
 
@@ -89,7 +98,7 @@ class SubscriptionResolverMap extends ResolverMap
 
                     // filter on roomName
                     if (isset($args['roomName'])) {
-                        $room = $roomByName($args['roomName']);
+                        $room = $roomById($args['roomName']);
                         if ($room->getId() !== $message->getRoom()->getId()) {
                             $payloadEvent->stopPropagation();
 
@@ -104,9 +113,10 @@ class SubscriptionResolverMap extends ResolverMap
                 'roomId' => function(Message $message): Int {
                     return $message->getRoom()->getId();
                 },
-                'createdAt' => function(Message $message): string {
-                    return $message->getCreatedAt()->format(\DATE_ATOM);
-                }
+                'createdAt' => $formatCreatedAt
+            ],
+            'Room' => [
+                'createdAt' => $formatCreatedAt
             ]
         ];
     }

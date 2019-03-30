@@ -13,30 +13,6 @@ docker-compose exec app_demo bash -c "composer i"
 docker-compose exec -u www-data app_demo bash -c "php bin/console doctrine:migrations:migrate"
 ```
 
-## GraphQL test query and mutation
-
-```graphql
-query getRooms {
-  rooms {
-    id
-    name
-    messages {
-      roomId
-      createdAt
-      body
-    }
-  }
-}
-
-mutation sendMessageToFoo {
-	chat(roomName: "foo", body: "my message") {
-    roomId
-    createdAt
-    body
-  }
-}
-```
-
 ## Start a subscription
 
 ### using curl

@@ -17,6 +17,11 @@ class Message
     private $id;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $nickname;
+
+    /**
      * @ORM\Column(type="text")
      */
     private $body;
@@ -40,6 +45,18 @@ class Message
     public function getBody(): ?string
     {
         return $this->body;
+    }
+
+    public function getNickname(): ?string
+    {
+        return $this->nickname;
+    }
+
+    public function setNickname(string $nickname): self
+    {
+        $this->nickname = $nickname;
+
+        return $this;
     }
 
     public function setBody(string $body): self

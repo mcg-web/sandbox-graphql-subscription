@@ -18,7 +18,9 @@ services:
         environment:
             APP_ENV: "dev"
             APP_DEBUG: 1
+            WWW_USER: "1000"
         volumes:
             - "./:/var/www"
         ports:
           - "8000:80"
+        command: "bash -c 'usermod -u $${WWW_USER} www-data; . /etc/apache2/envvars; exec apache2 -D FOREGROUND'"

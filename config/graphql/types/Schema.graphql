@@ -1,5 +1,7 @@
 type Message {
+  id: Int!
   roomId: Int!
+  nickname: String!
   body: String!
   createdAt: String!
 }
@@ -8,15 +10,16 @@ type Room {
   id: Int!
   name: String!
   messages: [Message!]!
+  createdAt: String!
 }
 
 type Query {
-  messages(roomName: String!): [Message!]!
+  messages(roomId: Int!): [Message!]!
   rooms: [Room!]!
 }
 
 type Mutation {
-  chat(roomName: String!, body: String!): Message!
+  chat(roomId: Int!, body: String!, nickname: String!): Message!
   createRoom(name: String!): Room
 }
 
