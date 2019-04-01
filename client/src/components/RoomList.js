@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Room from './Room'
+import {Room} from './Room'
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 
@@ -14,7 +14,7 @@ export const ROOMS_QUERY = gql`
   }
 `
 
-class RoomList extends Component {
+export class RoomList extends Component {
   render() {
     return (
       <Query query={ROOMS_QUERY}>
@@ -34,5 +34,3 @@ class RoomList extends Component {
     )
   }
 }
-
-export default RoomList

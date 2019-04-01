@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import { Link } from 'react-router-dom'
 import {timeDifferenceForDate} from "../utils";
 
-class Room extends Component {
+export class Room extends Component {
   render() {
     return (
       <div className="flex mt2 items-start">
@@ -16,5 +16,3 @@ class Room extends Component {
     )
   }
 }
-
-export default Room

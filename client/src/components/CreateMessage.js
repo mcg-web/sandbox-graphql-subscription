@@ -14,7 +14,7 @@ const MESSAGE_MUTATION = gql`
 
 `
 
-class CreateMessage extends Component {
+export class CreateMessage extends Component {
   state = {
     roomId: this.props.roomId,
     nickname: '',
@@ -50,5 +50,3 @@ class CreateMessage extends Component {
     )
   }
 }
-
-export default CreateMessage

@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import Message from './Message'
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
-import CreateMessage from "./CreateMessage";
+import {CreateMessage} from "./CreateMessage";
+import {Message} from "./Message";
 
 const MESSAGES_QUERY = gql`
   query getMessages($roomId: Int!){
@@ -16,7 +16,7 @@ const MESSAGES_QUERY = gql`
   }
 `
 
-class MessageList extends Component {
+export class MessageList extends Component {
   render() {
     const { roomId } = this.props.match.params
     return (
@@ -38,5 +38,3 @@ class MessageList extends Component {
     )
   }
 }
-
-export default MessageList

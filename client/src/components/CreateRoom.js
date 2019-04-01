@@ -12,7 +12,7 @@ const ROOM_MUTATION = gql`
 
 `
 
-class CreateRoom extends Component {
+export class CreateRoom extends Component {
   state = {
     name: '',
   }
@@ -41,5 +41,3 @@ class CreateRoom extends Component {
     )
   }
 }
-
-export default CreateRoom
