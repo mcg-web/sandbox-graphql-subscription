@@ -40,13 +40,13 @@ curl --request POST \
   const payload = await rawResponse.json();
   console.log(payload);
 
-  if (payload.type === 'start') {
+  if (payload.type === 'data') {
     var url = new URL('http://localhost:5000/hub');
-    url.searchParams.append('topic', payload.topic);
+    url.searchParams.append('topic', payload.extensions.topic);
     // create the new mercureAuthorization cookie, this can be done by Authorization header 
     // but EventSource does not support header.
     // can't use CORS wildcard with credentials.
-    document.cookie = "mercureAuthorization="+payload.token;
+    document.cookie = "mercureAuthorization="+payload.extensions.token;
     var eventSource = new EventSource(url, {withCredentials: true});
     eventSource.onmessage = e => console.log(JSON.parse(e.data));
   }
