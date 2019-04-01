@@ -10,6 +10,7 @@ type Room {
   id: Int!
   name: String!
   messages: [Message!]!
+  countMessages: Int!
   createdAt: String!
 }
 

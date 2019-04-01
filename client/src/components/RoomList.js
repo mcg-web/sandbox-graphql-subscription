@@ -8,6 +8,7 @@ export const ROOMS_QUERY = gql`
     rooms {
       id
       name
+      countMessages
       createdAt
     }
   }

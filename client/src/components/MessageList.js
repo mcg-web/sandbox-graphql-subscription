@@ -7,6 +7,7 @@ import CreateMessage from "./CreateMessage";
 const MESSAGES_QUERY = gql`
   query getMessages($roomId: Int!){
     messages(roomId: $roomId) {
+      id
       roomId
       createdAt
       nickname

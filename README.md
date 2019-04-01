@@ -29,7 +29,7 @@ curl --request POST \
 ```javascript
 (async () => {
   // start a subscription
-  const rawResponse = await fetch("http://localhost:8000/subscription/", {
+  const rawResponse = await fetch("http://localhost:8000/subscription", {
     method: 'POST',
     headers: {
       'Accept': 'application/json',

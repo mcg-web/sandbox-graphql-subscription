@@ -116,7 +116,10 @@ class SubscriptionResolverMap extends ResolverMap
                 'createdAt' => $formatCreatedAt
             ],
             'Room' => [
-                'createdAt' => $formatCreatedAt
+                'createdAt' => $formatCreatedAt,
+                'countMessages' => function(Room $room){
+                    return count($room->getMessages());
+                },
             ]
         ];
     }
