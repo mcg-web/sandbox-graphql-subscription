@@ -11,18 +11,18 @@ use App\Repository\RoomRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Overblog\GraphQLBundle\Error\UserError;
 use Overblog\GraphQLBundle\Resolver\ResolverMap;
-use Overblog\GraphQLSubscription\RealtimeNotifier;
 use Overblog\GraphQLSubscription\RootValue;
+use Overblog\GraphQLSubscription\SubscriptionManager;
 
 class SubscriptionResolverMap extends ResolverMap
 {
-    private $realTimeNotifier;
+    private $subscriptionManager;
 
     private $manager;
 
-    public function __construct(RealtimeNotifier $realTimeNotifier, ObjectManager $manager)
+    public function __construct(SubscriptionManager $subscriptionManager, ObjectManager $manager)
     {
-        $this->realTimeNotifier = $realTimeNotifier;
+        $this->subscriptionManager = $subscriptionManager;
         $this->manager = $manager;
     }
 
@@ -71,7 +71,7 @@ class SubscriptionResolverMap extends ResolverMap
                     $this->manager->flush();
 
                     // Then we can publish new messages that arrives from the chat mutation
-                    $this->realTimeNotifier->notify('inbox', $message); // <- Exactly what "inbox" will receive
+                    $this->subscriptionManager->notify('inbox', $message); // <- Exactly what "inbox" will receive
 
                     return $message;
                 },

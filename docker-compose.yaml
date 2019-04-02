@@ -30,9 +30,11 @@ services:
         image: "node:11"
         user: "node"
         working_dir: /home/node/app
+        environment:
+            NODE_USER: "1000"
         volumes:
             - ./client:/home/node/app
         ports:
             - "3000:3000"
             - "3001:3001"
-        command: "bash -c 'yarn && yarn start'"
+        command: "bash -c 'usermod -u $${NODE_USER} node; yarn && yarn start'"

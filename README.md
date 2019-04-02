@@ -9,8 +9,8 @@ docker-compose up -d
 ## Install
 
 ```bash
-docker-compose exec app_demo bash -c "composer i"
-docker-compose exec -u www-data app_demo bash -c "php bin/console doctrine:migrations:migrate"
+docker-compose exec -u www-data server bash -c "composer i"
+docker-compose exec -u www-data server bash -c "php bin/console doctrine:migrations:migrate"
 ```
 
 ## Start a subscription
