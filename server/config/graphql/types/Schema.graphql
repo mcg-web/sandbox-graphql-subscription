@@ -25,5 +25,5 @@ type Mutation {
 }
 
 type Subscription {
-  inbox(roomName: String!): Message
+  inbox(roomId: Int!): Message
 }

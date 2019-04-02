@@ -97,8 +97,8 @@ class SubscriptionResolverMap extends ResolverMap
                     $message = $payloadEvent->getPayload();
 
                     // filter on roomName
-                    if (isset($args['roomName'])) {
-                        $room = $roomById($args['roomName']);
+                    if (isset($args['roomId'])) {
+                        $room = $roomById($args['roomId']);
                         if ($room->getId() !== $message->getRoom()->getId()) {
                             $payloadEvent->stopPropagation();
 
@@ -118,7 +118,7 @@ class SubscriptionResolverMap extends ResolverMap
             'Room' => [
                 'createdAt' => $formatCreatedAt,
                 'countMessages' => function(Room $room){
-                    return count($room->getMessages());
+                    return $room->getMessages() ? count($room->getMessages()) : 0;
                 },
             ]
         ];

@@ -16,7 +16,7 @@ const httpLink = createHttpLink({
   uri: 'http://localhost:8000'
 })
 const sseClient = new SubscriptionClient(
-  `http://localhost:8000/subscriptions`,
+  'http://localhost:8000/subscriptions',
   'http://localhost:5000/hub'
 )
 const sseLink = new SSELink(sseClient)
@@ -33,18 +33,8 @@ const link = split(
 
 
 const client = new ApolloClient({
-  link: link,
-  cache: new InMemoryCache(),
-  defaultOptions: {
-    watchQuery: {
-      fetchPolicy: 'network-only',
-      errorPolicy: 'ignore',
-    },
-    query: {
-      fetchPolicy: 'network-only',
-      errorPolicy: 'all',
-    },
-  }
+  link,
+  cache: new InMemoryCache()
 })
 
 ReactDOM.render(

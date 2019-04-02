@@ -42,7 +42,7 @@ export class CreateMessage extends Component {
         <Mutation
           mutation={MESSAGE_MUTATION}
           variables={{ body, nickname, roomId }}
-          onCompleted={() => this.props.history.push('/')}
+          onCompleted={() => this.setState({ body: ""})}
         >
           {postMutation => <button onClick={postMutation}>Submit</button>}
         </Mutation>

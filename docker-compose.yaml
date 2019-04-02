@@ -2,9 +2,9 @@ version: "3.4"
 
 services:
     mercure:
-        image: dunglas/mercure
+        image: dunglas/mercure:v0.4.0
         environment:
-            CORS_ALLOWED_ORIGINS: "http://localhost:8000"
+            CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:8000"
             DEBUG: 1
             PUBLISHER_JWT_KEY: "!mySuperPublisherSecretKey!"
             SUBSCRIBER_JWT_KEY: "!mySuperSubscriberSecretKey!"

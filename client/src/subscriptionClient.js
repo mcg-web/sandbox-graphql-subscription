@@ -1,12 +1,12 @@
 import {ApolloLink, Observable} from 'apollo-link';
-import EventSource from 'eventsource';
+import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
 import {print} from 'graphql/language/printer';
 import isString from 'lodash.isstring';
 import isObject from 'lodash.isobject';
 
 export class SubscriptionClient {
   constructor(url, hubUrl, httpOptions) {
-    this.httpOptions = httpOptions;
+    this.httpOptions = httpOptions||{"timeout": 1000, "headers": {}};
     this.url = url;
     this.hubUrl = hubUrl;
     this.subscriptions = {};
@@ -43,15 +43,16 @@ export class SubscriptionClient {
           const subId = data.extensions.id;
           const url = new URL(this.hubUrl);
           url.searchParams.append('topic', data.extensions.topic);
-
-          const evtSource = new EventSource(url, {'Authorization': `Bearer ${data.extensions.token}`});
+          const evtSource = new EventSourcePolyfill(
+            url.href, {headers: { Authorization: `Bearer ${data.extensions.token}`}}
+          );
           this.subscriptions[subId] = {options, handler, evtSource};
 
           evtSource.onmessage = e => {
             const message = JSON.parse(e.data);
             switch (message.type) {
               case 'data':
-                this.subscriptions[subId].handler(message.payload);
+                this.subscriptions[subId].handler(message.payload.data);
                 break;
               case 'ka':
                 break;
@@ -100,23 +101,6 @@ export class SubscriptionClient {
       this.unsubscribe(parseInt(subId));
     });
   }
-}
-
-export function addGraphQLSubscriptions(networkInterface, spdyClient) {
-  return Object.assign(networkInterface, {
-    subscribe(request, handler) {
-      return spdyClient.subscribe(
-        {
-          query: print(request.query),
-          variables: request.variables
-        },
-        handler
-      );
-    },
-    unsubscribe(id) {
-      spdyClient.unsubscribe(id);
-    }
-  });
 }
 
 export class SSELink extends ApolloLink {

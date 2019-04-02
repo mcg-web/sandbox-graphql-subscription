@@ -16,15 +16,38 @@ const MESSAGES_QUERY = gql`
   }
 `
 
+const NEW_MESSAGES_SUBSCRIPTION = gql`
+  subscription getNewMessage($roomId: Int!) {  inbox(roomId: $roomId) { id, roomId, nickname, createdAt, body} }
+`
+
 export class MessageList extends Component {
+  _subscribeToNewMessages = subscribeToMore => {
+    const { roomId } = this.props.match.params
+    subscribeToMore({
+      document: NEW_MESSAGES_SUBSCRIPTION,
+      variables: {roomId},
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev
+        const newMessage = subscriptionData.data.inbox
+        const exists = prev.messages.find(({ id }) => id === newMessage.id);
+        if (exists) return prev;
+
+        return Object.assign({}, prev, {
+          messages: [newMessage, ...prev.messages]
+        })
+      }
+    })
+  }
+
   render() {
     const { roomId } = this.props.match.params
     return (
       <Query query={MESSAGES_QUERY} variables={{roomId}}>
-        {({ loading, error, data }) => {
+        {({ loading, error, data, subscribeToMore }) => {
           if (loading) return <div>Fetching</div>
           if (error) return <div>Error</div>
 
+          this._subscribeToNewMessages(subscribeToMore)
           const messagesToRender = data.messages
 
           return (
