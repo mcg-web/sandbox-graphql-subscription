@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import { Link } from 'react-router-dom'
-import {timeDifferenceForDate} from "../utils";
+import {timeDifferenceForDate} from "../utils"
 
 export class Room extends Component {
   render() {

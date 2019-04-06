@@ -1,112 +1,125 @@
-import {ApolloLink, Observable} from 'apollo-link';
-import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
-import {print} from 'graphql/language/printer';
-import isString from 'lodash.isstring';
-import isObject from 'lodash.isobject';
+import {ApolloLink, Observable} from 'apollo-link'
+import { EventSourcePolyfill } from 'event-source-polyfill'
+import {print} from 'graphql/language/printer'
+import isString from 'lodash.isstring'
+import isObject from 'lodash.isobject'
 
 export class SubscriptionClient {
   constructor(url, hubUrl, httpOptions) {
-    this.httpOptions = httpOptions||{"timeout": 1000, "headers": {}};
-    this.url = url;
-    this.hubUrl = hubUrl;
-    this.subscriptions = {};
+    this.httpOptions = httpOptions||{"timeout": 1000, "headers": {}}
+    this.url = url
+    this.hubUrl = hubUrl
+    this.subscriptions = {}
+    this.cache = {}
+  }
+
+  static payloadCacheKey(payload, header) {
+    return JSON.stringify({payload, header});
+  }
+
+  start(payload, headers, timeout) {
+    const cacheKey = SubscriptionClient.payloadCacheKey(payload, headers);
+    this.cache[cacheKey] = this.cache.hasOwnProperty(cacheKey) ? this.cache[cacheKey] : fetch(this.url, {
+      method: 'POST',
+      headers: Object.assign({}, headers, {
+        'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify({ type: 'start', payload}),
+      timeout: timeout || 1000
+    }).then(res => res.json())
+
+    return this.cache[cacheKey]
   }
 
   subscribe(options, handler) {
     const {timeout, headers} =
       typeof this.httpOptions === 'function'
         ? this.httpOptions()
-        : this.httpOptions;
-
-    const {query, variables, operationName} = options;
-    if (!query) throw new Error('Must provide `query` to subscribe.');
-    if (!handler) throw new Error('Must provide `handler` to subscribe.');
+        : this.httpOptions
+    const {query, variables, operationName} = options
+    if (!query) throw new Error('Must provide `query` to subscribe.')
+    if (!handler) throw new Error('Must provide `handler` to subscribe.')
     if (
       (operationName && !isString(operationName)) ||
       (variables && !isObject(variables))
     )
       throw new Error(
         'Incorrect option types to subscribe. `operationName` must be a string, and `variables` must be an object.'
-      );
+      )
+    const payload = {query, variables, operationName};
 
-    return fetch(this.url, {
-      method: 'POST',
-      headers: Object.assign({}, headers, {
-        'Content-Type': 'application/json'
-      }),
-      body: JSON.stringify({ type: 'start', payload: {query, variables, operationName}}),
-      timeout: timeout || 1000
-    })
-      .then(res => res.json())
+    return this.start(payload, headers, timeout)
       .then(data => {
         if (data.type === 'data') {
-          const subId = data.extensions.id;
-          const url = new URL(this.hubUrl);
-          url.searchParams.append('topic', data.extensions.topic);
+          const subId = data.extensions.id
+          const url = new URL(this.hubUrl)
+          url.searchParams.append('topic', data.extensions.topic)
           const evtSource = new EventSourcePolyfill(
             url.href, {headers: { Authorization: `Bearer ${data.extensions.token}`}}
-          );
-          this.subscriptions[subId] = {options, handler, evtSource};
+          )
+          this.subscriptions[subId] = {options, handler, evtSource}
 
           evtSource.onmessage = e => {
-            const message = JSON.parse(e.data);
+            const message = JSON.parse(e.data)
             switch (message.type) {
               case 'data':
-                this.subscriptions[subId].handler(message.payload.data);
-                break;
+                this.subscriptions[subId].handler(message.payload.data)
+                break
               case 'ka':
-                break;
+                break
             }
 
             evtSource.onerror = e => {
               console.error(
                 `EventSource connection failed for subscription ID: ${subId}. Retry.`
-              );
+              )
               if (
                 this.subscriptions[subId] &&
                 this.subscriptions[subId].evtSource
               ) {
-                this.subscriptions[subId].evtSource.close();
+                this.subscriptions[subId].evtSource.close()
               }
-              delete this.subscriptions[subId];
+              delete this.subscriptions[subId]
               const retryTimeout = setTimeout(() => {
-                this.subscribe(options, handler);
-                clearTimeout(retryTimeout);
-              }, 1000);
-            };
-          };
-          return subId;
+                this.subscribe(options, handler)
+                clearTimeout(retryTimeout)
+              }, 1000)
+            }
+          }
+          return subId
         }
       })
       .catch(error => {
-        console.error(`${error.message}. Subscription failed. Retry.`);
+        console.error(`${error.message}. Subscription failed. Retry.`)
+        delete this.cache[SubscriptionClient.payloadCacheKey(payload, headers)]
         const retryTimeout = setTimeout(() => {
-          this.subscribe(options, handler);
-          clearTimeout(retryTimeout);
-        }, 1000);
-      });
+          this.subscribe(options, handler)
+          clearTimeout(retryTimeout)
+        }, 1000)
+      })
   }
 
   unsubscribe(subscription) {
     Promise.resolve(subscription).then(subId => {
+      // TODO: unsubscribe from backend to
       if (this.subscriptions[subId] && this.subscriptions[subId].evtSource) {
-        this.subscriptions[subId].evtSource.close();
+        this.subscriptions[subId].evtSource.close()
       }
-      delete this.subscriptions[subId];
-    });
+      delete this.subscriptions[subId]
+    })
   }
 
   unsubscribeAll() {
     Object.keys(this.subscriptions).forEach(subId => {
-      this.unsubscribe(parseInt(subId));
-    });
+      this.unsubscribe(subId)
+    })
   }
 }
 
 export class SSELink extends ApolloLink {
   constructor(paramsOrClient) {
-    super();
-    this.subscriptionClient = paramsOrClient;
+    super()
+    this.subscriptionClient = paramsOrClient
   }
 
   request(operation) {
@@ -114,9 +127,9 @@ export class SSELink extends ApolloLink {
       const subscription = this.subscriptionClient.subscribe(
         Object.assign(operation, {query: print(operation.query)}),
         data => observer.next({data})
-      );
+      )
 
-      return () => this.subscriptionClient.unsubscribe(subscription);
-    });
+      return () => this.subscriptionClient.unsubscribe(subscription)
+    })
   }
 }
