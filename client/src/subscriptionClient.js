@@ -6,7 +6,7 @@ import isObject from 'lodash.isobject'
 
 export class SubscriptionClient {
   constructor(url, hubUrl, httpOptions) {
-    this.httpOptions = httpOptions||{"timeout": 1000, "headers": {}}
+    this.httpOptions = httpOptions
     this.url = url
     this.hubUrl = hubUrl
     this.subscriptions = {}
@@ -25,17 +25,21 @@ export class SubscriptionClient {
         'Content-Type': 'application/json'
       }),
       body: JSON.stringify({ type: 'start', payload}),
-      timeout: timeout || 1000
+      timeout: timeout
     }).then(res => res.json())
 
     return this.cache[cacheKey]
   }
 
   subscribe(options, handler) {
-    const {timeout, headers} =
+    let httpOptions =
       typeof this.httpOptions === 'function'
         ? this.httpOptions()
         : this.httpOptions
+    httpOptions = Object.assign({
+      headers: {}, timeout: 1000, heartbeatTimeout: 300000
+    }, httpOptions)
+    const {timeout, headers, heartbeatTimeout} = httpOptions
     const {query, variables, operationName} = options
     if (!query) throw new Error('Must provide `query` to subscribe.')
     if (!handler) throw new Error('Must provide `handler` to subscribe.')
@@ -50,12 +54,13 @@ export class SubscriptionClient {
 
     return this.start(payload, headers, timeout)
       .then(data => {
+        // todo manage error type
         if (data.type === 'data') {
           const subId = data.extensions.id
           const url = new URL(this.hubUrl)
           url.searchParams.append('topic', data.extensions.topic)
           const evtSource = new EventSourcePolyfill(
-            url.href, {headers: { Authorization: `Bearer ${data.extensions.token}`}}
+            url.href, {heartbeatTimeout, headers: { Authorization: `Bearer ${data.extensions.token}`}}
           )
           this.subscriptions[subId] = {options, handler, evtSource}
 
@@ -65,6 +70,7 @@ export class SubscriptionClient {
               case 'data':
                 this.subscriptions[subId].handler(message.payload.data)
                 break
+              default:
               case 'ka':
                 break
             }
@@ -101,7 +107,7 @@ export class SubscriptionClient {
 
   unsubscribe(subscription) {
     Promise.resolve(subscription).then(subId => {
-      // TODO: unsubscribe from backend to
+      // TODO: unsubscribe from backend too?
       if (this.subscriptions[subId] && this.subscriptions[subId].evtSource) {
         this.subscriptions[subId].evtSource.close()
       }
