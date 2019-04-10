@@ -1606,12 +1606,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mcg-web/GraphQLBundle.git",
-                "reference": "c03a02edf65c19ffb481c700034bebc92a192a05"
+                "reference": "d53d67e7f3380a742003f32b7acc29118531ce64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mcg-web/GraphQLBundle/zipball/c03a02edf65c19ffb481c700034bebc92a192a05",
-                "reference": "c03a02edf65c19ffb481c700034bebc92a192a05",
+                "url": "https://api.github.com/repos/mcg-web/GraphQLBundle/zipball/d53d67e7f3380a742003f32b7acc29118531ce64",
+                "reference": "d53d67e7f3380a742003f32b7acc29118531ce64",
                 "shasum": ""
             },
             "require": {
@@ -1724,7 +1724,7 @@
             "support": {
                 "source": "https://github.com/mcg-web/GraphQLBundle/tree/subscriptions"
             },
-            "time": "2019-04-06T06:21:04+00:00"
+            "time": "2019-04-09T09:41:12+00:00"
         },
         {
             "name": "psr/cache",

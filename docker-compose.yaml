@@ -4,14 +4,15 @@ services:
     mercure:
         image: dunglas/mercure:v0.4.0
         environment:
-            CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:8000"
-            DEBUG: 1
+            CORS_ALLOWED_ORIGINS: "*"
+            ADDR: ':5000'
+            DEBUG: 0
             PUBLISHER_JWT_KEY: "!mySuperPublisherSecretKey!"
             SUBSCRIBER_JWT_KEY: "!mySuperSubscriberSecretKey!"
         expose:
-            - "80"
+            - "5000"
         ports:
-            - "5000:80"
+            - "5000:5000"
 
     server:
         build: ./server

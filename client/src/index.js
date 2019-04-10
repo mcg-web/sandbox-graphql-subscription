@@ -12,12 +12,14 @@ import { SubscriptionClient, SSELink } from './subscriptionClient'
 import { split } from 'apollo-link';
 import { getMainDefinition } from 'apollo-utilities';
 
+const HOSTNAME = window.location.hostname
+
 const httpLink = createHttpLink({
-  uri: 'http://localhost:8000'
+  uri: `http://${HOSTNAME}:8000`
 })
 const sseClient = new SubscriptionClient(
-  'http://localhost:8000/subscriptions',
-  'http://localhost:5000/hub'
+  `http://${HOSTNAME}:8000/subscriptions`,
+  `http://${HOSTNAME}:5000/hub`
 )
 const sseLink = new SSELink(sseClient)
 
