@@ -68,7 +68,7 @@
     "repositories": [
         {
             "name": "overblog/graphql-bundle",
-            "url": "git@github.com:mcg-web/GraphQLBundle.git",
+            "url": "git@github.com:mcg-web/private-graphql-bundle.git",
             "type": "vcs"
 	}
     ]

@@ -10,27 +10,6 @@ export class SubscriptionClient {
     this.url = url;
     this.hubUrl = hubUrl;
     this.subscriptions = {};
-    this.cache = {};
-  }
-
-  static payloadCacheKey(payload, header) {
-    return JSON.stringify({ payload, header });
-  }
-
-  start(payload, headers, timeout) {
-    const cacheKey = SubscriptionClient.payloadCacheKey(payload, headers);
-    this.cache[cacheKey] = this.cache.hasOwnProperty(cacheKey)
-      ? this.cache[cacheKey]
-      : fetch(this.url, {
-          method: "POST",
-          headers: Object.assign({}, headers, {
-            "Content-Type": "application/json"
-          }),
-          body: JSON.stringify({ type: "start", payload }),
-          timeout: timeout
-        }).then(res => res.json());
-
-    return this.cache[cacheKey];
   }
 
   subscribe(options, handler) {
@@ -41,12 +20,18 @@ export class SubscriptionClient {
     httpOptions = Object.assign(
       {
         headers: {},
+        evtSourceHeaders: {},
         timeout: 1000,
         heartbeatTimeout: 300000
       },
       httpOptions
     );
-    const { timeout, headers, heartbeatTimeout } = httpOptions;
+    const {
+      timeout,
+      headers,
+      heartbeatTimeout,
+      evtSourceHeaders
+    } = httpOptions;
     const { query, variables, operationName } = options;
     if (!query) throw new Error("Must provide `query` to subscribe.");
     if (!handler) throw new Error("Must provide `handler` to subscribe.");
@@ -59,16 +44,28 @@ export class SubscriptionClient {
       );
     const payload = { query, variables, operationName };
 
-    return this.start(payload, headers, timeout)
+    return fetch(this.url, {
+      method: "POST",
+      headers: Object.assign({}, headers, {
+        "Content-Type": "application/json"
+      }),
+      body: JSON.stringify({ type: "start", payload }),
+      timeout: timeout
+    })
+      .then(res => res.json())
       .then(data => {
-        // todo manage error type
         if (data.type === "data") {
           const subId = data.extensions.id;
           const url = new URL(this.hubUrl);
           url.searchParams.append("topic", data.extensions.topic);
+          if (data.extensions.token) {
+            Object.assign(evtSourceHeaders, {
+              Authorization: `Bearer ${data.extensions.token}`
+            });
+          }
           const evtSource = new EventSourcePolyfill(url.href, {
             heartbeatTimeout,
-            headers: { Authorization: `Bearer ${data.extensions.token}` }
+            headers: evtSourceHeaders
           });
           this.subscriptions[subId] = { options, handler, evtSource };
 
@@ -105,7 +102,6 @@ export class SubscriptionClient {
       })
       .catch(error => {
         console.error(`${error.message}. Subscription failed. Retry.`);
-        delete this.cache[SubscriptionClient.payloadCacheKey(payload, headers)];
         const retryTimeout = setTimeout(() => {
           this.subscribe(options, handler);
           clearTimeout(retryTimeout);
@@ -137,7 +133,15 @@ export class SubscriptionClient {
 export class SSELink extends ApolloLink {
   constructor(paramsOrClient) {
     super();
-    this.subscriptionClient = paramsOrClient;
+    if (paramsOrClient instanceof SubscriptionClient) {
+      this.subscriptionClient = paramsOrClient;
+    } else {
+      this.subscriptionClient = new SubscriptionClient(
+        paramsOrClient.url,
+        paramsOrClient.hubUrl,
+        paramsOrClient.httpOptions
+      );
+    }
   }
 
   request(operation) {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe48e2ae05b3b1845899ca1aa7d3b6ee",
+    "content-hash": "9c08c3e3211b0e7c3bb09436ec92ec6f",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1605,13 +1605,13 @@
             "version": "dev-subscriptions",
             "source": {
                 "type": "git",
-                "url": "https://github.com/mcg-web/GraphQLBundle.git",
-                "reference": "d53d67e7f3380a742003f32b7acc29118531ce64"
+                "url": "git@github.com:mcg-web/private-graphql-bundle.git",
+                "reference": "42d4806d595806359a801e67cb6225525595c639"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mcg-web/GraphQLBundle/zipball/d53d67e7f3380a742003f32b7acc29118531ce64",
-                "reference": "d53d67e7f3380a742003f32b7acc29118531ce64",
+                "url": "https://api.github.com/repos/mcg-web/private-graphql-bundle/zipball/42d4806d595806359a801e67cb6225525595c639",
+                "reference": "42d4806d595806359a801e67cb6225525595c639",
                 "shasum": ""
             },
             "require": {
@@ -1722,9 +1722,9 @@
                 "Relay"
             ],
             "support": {
-                "source": "https://github.com/mcg-web/GraphQLBundle/tree/subscriptions"
+                "source": "https://github.com/mcg-web/private-graphql-bundle/tree/subscriptions"
             },
-            "time": "2019-04-09T09:41:12+00:00"
+            "time": "2019-04-10T13:29:14+00:00"
         },
         {
             "name": "psr/cache",
