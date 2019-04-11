@@ -55,12 +55,12 @@ export class SubscriptionClient {
       .then(res => res.json())
       .then(data => {
         if (data.type === "data") {
-          const subId = data.extensions.id;
+          const subId = data.subId;
           const url = new URL(this.hubUrl);
-          url.searchParams.append("topic", data.extensions.topic);
-          if (data.extensions.token) {
+          url.searchParams.append("topic", data.topic);
+          if (data.token) {
             Object.assign(evtSourceHeaders, {
-              Authorization: `Bearer ${data.extensions.token}`
+              Authorization: `Bearer ${data.token}`
             });
           }
           const evtSource = new EventSourcePolyfill(url.href, {
