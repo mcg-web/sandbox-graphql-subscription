@@ -6,10 +6,12 @@ namespace App\GraphQL\Resolver;
 
 use App\Entity\Message;
 use App\Entity\Room;
-use App\Repository\MessageRepository;
-use App\Repository\RoomRepository;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityRepository;
+use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\WrappingType;
 use Overblog\GraphQLBundle\Error\UserError;
+use Overblog\GraphQLBundle\Resolver\Resolver;
 use Overblog\GraphQLBundle\Resolver\ResolverMap;
 use Overblog\GraphQLSubscription\RootValue;
 use Overblog\GraphQLSubscription\SubscriptionManager;
@@ -26,11 +28,16 @@ class SubscriptionResolverMap extends ResolverMap
         $this->manager = $manager;
     }
 
+    public function setSubscriptionManager(SubscriptionManager $subscriptionManager)
+    {
+        $this->subscriptionManager = $subscriptionManager;
+    }
+
     protected function map()
     {
-        /** @var RoomRepository $roomRepository */
+        /** @var EntityRepository $roomRepository */
         $roomRepository = $this->manager->getRepository(Room::class);
-        /** @var MessageRepository $roomRepository */
+        /** @var EntityRepository $roomRepository */
         $messageRepository = $this->manager->getRepository(Message::class);
 
         $roomById = function (int $id) use ($roomRepository): ?Room {
@@ -122,5 +129,18 @@ class SubscriptionResolverMap extends ResolverMap
                 },
             ]
         ];
+    }
+
+    public function __invoke($value, $args, $context, ResolveInfo $info)
+    {
+        $type = $info->parentType;
+        if ($type instanceof WrappingType) {
+            $type = $type->getWrappedType(true);
+        }
+
+        return $this->isResolvable($type->name, $info->fieldName) ?
+            ($this->resolve($type->name, $info->fieldName))(...func_get_args()) :
+            Resolver::defaultResolveFn(...func_get_args())
+            ;
     }
 }

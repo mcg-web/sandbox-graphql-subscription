@@ -5,10 +5,10 @@ import isString from "lodash.isstring";
 import isObject from "lodash.isobject";
 
 export class SubscriptionClient {
-  constructor(url, hubUrl, httpOptions) {
+  constructor(uri, hubUri, httpOptions) {
     this.httpOptions = httpOptions;
-    this.url = url;
-    this.hubUrl = hubUrl;
+    this.uri = uri;
+    this.hubUri = hubUri;
     this.subscriptions = {};
   }
 
@@ -44,7 +44,7 @@ export class SubscriptionClient {
       );
     const payload = { query, variables, operationName };
 
-    return fetch(this.url, {
+    return fetch(this.uri, {
       method: "POST",
       headers: Object.assign({}, headers, {
         "Content-Type": "application/json"
@@ -56,14 +56,14 @@ export class SubscriptionClient {
       .then(data => {
         if (data.type === "data") {
           const subId = data.subId;
-          const url = new URL(this.hubUrl);
-          url.searchParams.append("topic", data.topic);
-          if (data.token) {
+          const uri = new URL(this.hubUri);
+          uri.searchParams.append("topic", data.topic);
+          if (data.accessToken) {
             Object.assign(evtSourceHeaders, {
-              Authorization: `Bearer ${data.token}`
+              Authorization: `Bearer ${data.accessToken}`
             });
           }
-          const evtSource = new EventSourcePolyfill(url.href, {
+          const evtSource = new EventSourcePolyfill(uri.href, {
             heartbeatTimeout,
             headers: evtSourceHeaders
           });
@@ -137,8 +137,8 @@ export class SSELink extends ApolloLink {
       this.subscriptionClient = paramsOrClient;
     } else {
       this.subscriptionClient = new SubscriptionClient(
-        paramsOrClient.url,
-        paramsOrClient.hubUrl,
+        paramsOrClient.uri,
+        paramsOrClient.hubUri,
         paramsOrClient.httpOptions
       );
     }

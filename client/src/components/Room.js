@@ -1,18 +1,30 @@
-import React, {Component} from 'react'
-import { Link } from 'react-router-dom'
-import {timeDifferenceForDate} from "../utils"
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { timeDifferenceForDate } from "../utils";
 
 export class Room extends Component {
   render() {
     return (
-      <div className="flex mt2 items-start">
-        <div className="ml1">
-          <Link to={`/${this.props.room.id}/messages`}>{this.props.room.name} (#{this.props.room.id})</Link>
-          <div className="f6 lh-copy gray">
-            {this.props.room.countMessages} Message(s) — {timeDifferenceForDate(this.props.room.createdAt)}
-          </div>
+      <li className="flex items-center lh-copy pa3 ph0-l bb b--black-10">
+        <img
+          className="w2 h2 w3-ns h3-ns br-100"
+          alt="${this.props.message.nickname}"
+          src={`https://ui-avatars.com/api/?name=${
+            this.props.room.name
+          }&background=ff6600&color=fff`}
+        />
+        <div className="pl3 flex-auto">
+          <span className="f6 db black-70">
+            <Link to={`/${this.props.room.id}/messages`}>
+              {this.props.room.name} (#{this.props.room.id})
+            </Link>
+          </span>
+          <span className="f6 db black-70">
+            {this.props.room.countMessages} Message(s) —{" "}
+            {timeDifferenceForDate(this.props.room.createdAt)}
+          </span>
         </div>
-      </div>
-    )
+      </li>
+    );
   }
 }

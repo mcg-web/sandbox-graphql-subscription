@@ -56,10 +56,14 @@ class MessageInner extends Component {
     const { messagesToRender, roomId } = this.props;
     return (
       <div>
-        {messagesToRender.map(message => (
-          <Message key={message.id} message={message} />
-        ))}
-        <CreateMessage roomId={roomId} />
+        <ul className="list pl0 mt0 measure left">
+          {messagesToRender.map(message => (
+            <Message key={message.id} message={message} />
+          ))}
+        </ul>
+        <div className="fixed left-0 bottom-0 right-0 bg-white white">
+          <CreateMessage roomId={roomId} />
+        </div>
       </div>
     );
   }

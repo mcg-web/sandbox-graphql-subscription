@@ -25,9 +25,9 @@ export class RoomList extends Component {
           const roomsToRender = data.rooms
 
           return (
-            <div>
+            <ul className="list pl0 mt0 measure left">
               {roomsToRender.map(room => <Room key={room.id} room={room} />)}
-            </div>
+            </ul>
           )
         }}
       </Query>
