@@ -7,13 +7,8 @@ class Header extends Component {
     return (
       <div className="flex pa1 justify-between nowrap orange">
         <div className="flex flex-fixed black">
-          <div className="fw7 mr1">Rooms</div>
-          <Link to="/" className="ml1 no-underline black">
-            list
-          </Link>
-          <div className="ml1">|</div>
-          <Link to="/create" className="ml1 no-underline black">
-            new
+          <Link to="/" className="fw7 mr1 ml1 no-underline white">
+            Live chat
           </Link>
         </div>
       </div>

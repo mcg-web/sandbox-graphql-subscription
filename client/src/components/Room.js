@@ -9,13 +9,13 @@ export class Room extends Component {
         <img
           className="w2 h2 w3-ns h3-ns br-100"
           alt="${this.props.message.nickname}"
-          src={`https://ui-avatars.com/api/?name=${
+          src={`https://ui-avatars.com/api/?length=3&background=ff6600&color=fff&name=${
             this.props.room.name
-          }&background=ff6600&color=fff`}
+          }`}
         />
         <div className="pl3 flex-auto">
           <span className="f6 db black-70">
-            <Link to={`/${this.props.room.id}/messages`}>
+            <Link to={`/${this.props.room.id}/messages`} className="f6 link blue hover-dark-gray">
               {this.props.room.name} (#{this.props.room.id})
             </Link>
           </span>

@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
-import {CreateRoom} from './CreateRoom'
-import {RoomList} from './RoomList'
-import Header from './Header'
-import { Switch, Route } from 'react-router-dom'
-import {MessageList} from "./MessageList";
+import React, { Component } from "react";
+import { CreateRoom } from "./CreateRoom";
+import { RoomList } from "./RoomList";
+import Header from "./Header";
+import { Switch, Route } from "react-router-dom";
+import { MessageList } from "./MessageList";
 
 class App extends Component {
   render() {
@@ -18,8 +18,8 @@ class App extends Component {
           </Switch>
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default App
+export default App;
