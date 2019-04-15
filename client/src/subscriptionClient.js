@@ -56,14 +56,19 @@ export class SubscriptionClient {
       .then(data => {
         if (data.type === "data") {
           const subId = data.subId;
-          const uri = new URL(this.hubUri);
-          uri.searchParams.append("topic", data.topic);
+          let hubUri = data.hubUrl;
+          if (this.hubUri) {
+            const uri = new URL(this.hubUri)
+            uri.searchParams.append("topic", data.topic)
+            hubUri = uri.href;
+          }
+
           if (data.accessToken) {
             Object.assign(evtSourceHeaders, {
               Authorization: `Bearer ${data.accessToken}`
             });
           }
-          const evtSource = new EventSourcePolyfill(uri.href, {
+          const evtSource = new EventSourcePolyfill(hubUri, {
             heartbeatTimeout,
             headers: evtSourceHeaders
           });

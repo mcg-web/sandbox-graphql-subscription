@@ -1606,12 +1606,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:mcg-web/private-graphql-bundle.git",
-                "reference": "5f68138d8016c4456d620d8989b8e0c02519c42c"
+                "reference": "b28bb4170e3f4bf4c2490ee8257cfad311246ddf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mcg-web/private-graphql-bundle/zipball/5f68138d8016c4456d620d8989b8e0c02519c42c",
-                "reference": "5f68138d8016c4456d620d8989b8e0c02519c42c",
+                "url": "https://api.github.com/repos/mcg-web/private-graphql-bundle/zipball/b28bb4170e3f4bf4c2490ee8257cfad311246ddf",
+                "reference": "b28bb4170e3f4bf4c2490ee8257cfad311246ddf",
                 "shasum": ""
             },
             "require": {
@@ -1724,7 +1724,7 @@
             "support": {
                 "source": "https://github.com/mcg-web/private-graphql-bundle/tree/subscriptions"
             },
-            "time": "2019-04-13T08:44:03+00:00"
+            "time": "2019-04-15T05:44:23+00:00"
         },
         {
             "name": "psr/cache",

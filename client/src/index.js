@@ -13,14 +13,24 @@ import { split } from "apollo-link";
 import { getMainDefinition } from "apollo-utilities";
 
 const HOSTNAME = window.location.hostname;
+const endpoints = {
+  symfony: {
+    graphql: `http://${HOSTNAME}:8000`,
+    subscriptions: `http://${HOSTNAME}:8000/subscriptions`,
+  },
+  php: {
+    graphql: `http://${HOSTNAME}:8000/graphql.php`,
+    subscriptions: `http://${HOSTNAME}:8000/graphql.php`,
+  }
+};
+const type = window.location.hash ? window.location.hash.substr(1) : "symfony";
+
 const httpLink = createHttpLink({
-  /*uri: `http://${HOSTNAME}:8000`,*/
-  uri: `http://${HOSTNAME}:8000/graphql.php`,
+  uri: endpoints[type].graphql,
 });
 const sseLink = new SSELink({
-  /*uri: `http://${HOSTNAME}:8000/subscriptions`,*/
-  uri: `http://${HOSTNAME}:8000/graphql.php`,
-  hubUri: `http://${HOSTNAME}:5000/hub`,
+  uri: endpoints[type].subscriptions,
+  hubUri: `http://${HOSTNAME}:5000/hub`
 });
 
 const link = split(
