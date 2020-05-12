@@ -10,6 +10,8 @@ export class SubscriptionClient {
     this.uri = uri;
     this.hubUri = hubUri;
     this.subscriptions = {};
+    this.lastEventIDs = {};
+    this.eventPromises = {};
   }
 
   subscribe(options, handler) {
@@ -43,29 +45,39 @@ export class SubscriptionClient {
         "Incorrect option types to subscribe. `operationName` must be a string, and `variables` must be an object."
       );
     const payload = { query, variables, operationName };
+    const eventKey = JSON.stringify({ payload, headers });
 
-    return fetch(this.uri, {
-      method: "POST",
-      headers: Object.assign({}, headers, {
-        "Content-Type": "application/json"
-      }),
-      body: JSON.stringify({ type: "start", payload }),
-      timeout: timeout
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.type === "data") {
-          const subId = data.subId;
-          let hubUri = data.hubUrl;
+    if (!this.eventPromises[eventKey]) {
+      this.eventPromises[eventKey] = fetch(this.uri, {
+        method: "POST",
+        headers: Object.assign({}, headers, {
+          "Content-Type": "application/json"
+        }),
+        body: JSON.stringify({ type: "start", payload }),
+        timeout: timeout
+      })
+        .then(res => res.json());
+    }
+
+    return this.eventPromises[eventKey]
+      .then(payload => {
+        if (payload.extensions['__sse']) {
+          const sseExtension = payload.extensions['__sse'];
+          const subId = sseExtension.id;
+          let hubUri = sseExtension.hubUrl;
           if (this.hubUri) {
-            const uri = new URL(this.hubUri)
-            uri.searchParams.append("topic", data.topic)
+            const uri = new URL(this.hubUri);
+            uri.searchParams.append("topic", sseExtension.topic);
             hubUri = uri.href;
           }
+          if (this.lastEventIDs[eventKey]) {
+            hubUri =
+              hubUri + "&Last-Event-ID=" + this.lastEventIDs[eventKey];
+          }
 
-          if (data.accessToken) {
+          if (sseExtension.accessToken) {
             Object.assign(evtSourceHeaders, {
-              Authorization: `Bearer ${data.accessToken}`
+              Authorization: `Bearer ${sseExtension.accessToken}`
             });
           }
           const evtSource = new EventSourcePolyfill(hubUri, {
@@ -75,6 +87,7 @@ export class SubscriptionClient {
           this.subscriptions[subId] = { options, handler, evtSource };
 
           evtSource.onmessage = e => {
+            this.lastEventIDs[eventKey] = e.lastEventId;
             const message = JSON.parse(e.data);
             switch (message.type) {
               case "data":
@@ -97,10 +110,10 @@ export class SubscriptionClient {
             };
           };
           return subId;
-        } else if (data.type === "error") {
+        } else if (payload.errors) {
           console.error(
             `Subscription start failed with error payload: ${JSON.stringify(
-              data
+              payload
             )}.`
           );
         }

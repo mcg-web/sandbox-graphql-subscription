@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import { Room } from "./Room";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
-import { CreateMessage } from "./CreateMessage";
-import { CreateRoom } from "./CreateRoom";
 
 export const ROOMS_QUERY = gql`
   {

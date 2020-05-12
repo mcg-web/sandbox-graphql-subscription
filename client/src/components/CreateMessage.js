@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import { Mutation } from "react-apollo";
-import gql from "graphql-tag";
+import React, { Component } from 'react'
+import { Mutation } from 'react-apollo'
+import gql from 'graphql-tag'
 
 const MESSAGE_MUTATION = gql`
   mutation createFooMessage($roomId: Int!, $nickname: String!, $body: String!) {
@@ -11,19 +11,20 @@ const MESSAGE_MUTATION = gql`
       body
     }
   }
-`;
+
+`
 
 export class CreateMessage extends Component {
   state = {
     roomId: this.props.roomId,
-    nickname: "",
-    body: ""
-  };
+    nickname: '',
+    body: '',
+  }
 
   render() {
-    const { roomId, body, nickname } = this.state;
+    const { roomId, body, nickname } = this.state
     return (
-      <form className="bg-light-red mw7 center pa4 br2-ns ba b--black-10">
+      <div className="bg-light-red mw7 center pa4 br2-ns ba b--black-10">
         <fieldset className="cf bn ma0 pa0">
           <legend className="pa0 f5 f4-ns mb3 black-80">Message</legend>
           <div className="cf">
@@ -57,7 +58,7 @@ export class CreateMessage extends Component {
             </Mutation>
           </div>
         </fieldset>
-      </form>
+      </div>
     );
   }
 }

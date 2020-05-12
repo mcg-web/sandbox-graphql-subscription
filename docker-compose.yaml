@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
     mercure:
-        image: dunglas/mercure:v0.4.0
+        image: dunglas/mercure:v0.4.2
         environment:
             CORS_ALLOWED_ORIGINS: "*"
             ADDR: ':5000'

@@ -64,12 +64,5 @@
             "allow-contrib": false,
             "require": "4.2.*"
         }
-    },
-    "repositories": [
-        {
-            "name": "overblog/graphql-subscription",
-            "url": "git@github.com:overblog/graphql-subscription.git",
-            "type": "vcs"
-	    }
-    ]
+    }
 }
