@@ -8,14 +8,14 @@
         "lcobucci/jwt": "^3.2",
         "nelmio/cors-bundle": "^1.5",
         "overblog/graphiql-bundle": "^0.1.2",
-        "overblog/graphql-bundle": "dev-subscriptions",
+        "overblog/graphql-bundle": "0.11.*",
+        "overblog/graphql-subscription": "dev-master",
         "symfony/apache-pack": "^1.0",
         "symfony/console": "4.2.*",
         "symfony/dotenv": "4.2.*",
         "symfony/flex": "^1.1",
         "symfony/framework-bundle": "4.2.*",
         "symfony/maker-bundle": "^1.11",
-        "symfony/mercure": "^0.1.0",
         "symfony/orm-pack": "^1.0",
         "symfony/web-server-bundle": "4.2.*",
         "symfony/yaml": "4.2.*"
@@ -67,9 +67,9 @@
     },
     "repositories": [
         {
-            "name": "overblog/graphql-bundle",
-            "url": "git@github.com:mcg-web/private-graphql-bundle.git",
+            "name": "overblog/graphql-subscription",
+            "url": "git@github.com:overblog/graphql-subscription.git",
             "type": "vcs"
-	}
+	    }
     ]
 }
